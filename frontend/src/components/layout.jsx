@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useNotifications } from "../context/NotificationContext";
-import { useAuth } from "../context/AuthContext";
+//  REMOVE - import { useAuth } from "../context/AuthContext";
 import SettingsOffcanvas from "./SettingsOffcanvas";
 import NotificationOffcanvas from "./NotificationOffcanvas.jsx";
 import "../css/main.css";
@@ -18,8 +18,9 @@ export default function Layout() {
   const [customersOpen, setCustomersOpen] = useState(false);
   const { notifications, unreadCount } = useNotifications();
   const { theme, setTheme } = useTheme();
-  const { user, logout, isOwner, isManager, isCashier, isStockKeeper } =
-    useAuth(); // ✅ Add this
+
+  //  REMOVE - const { user, logout, isOwner, isManager, isCashier, isStockKeeper } = useAuth();
+
   const navigate = useNavigate();
 
   const toggleTheme = () => {
@@ -29,9 +30,10 @@ export default function Layout() {
     });
   };
 
+  //  REMOVE or SIMPLIFY - Logout
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+    // logout();  //  Remove this
+    navigate("/"); //  Just redirect to home
   };
 
   const toggleSales = () => setSalesOpen(!salesOpen);
@@ -65,14 +67,12 @@ export default function Layout() {
               <i className="bi bi-list fs-3"></i>
             </button>
 
-            {/*  User Info */}
+            {/*  SIMPLIFIED - User Info (Without Auth) */}
             <div className="d-flex align-items-center gap-2">
               <i className="bi bi-person-circle fs-4 text-primary"></i>
               <div className="d-none d-md-block">
-                <small className="d-block fw-bold">{user?.name}</small>
-                <small className="text-muted text-capitalize">
-                  {user?.role || "Owner"}
-                </small>
+                <small className="d-block fw-bold">Admin</small>
+                <small className="text-muted text-capitalize">Owner</small>
               </div>
             </div>
 
@@ -101,15 +101,13 @@ export default function Layout() {
                 ></i>
               </button>
 
-              {/*  Logout Button */}
-              <button
+              {/* ⚠️ OPTIONAL - Logout Button (can remove completely) */}
+              {/* <button
                 className="btn btn-link text-danger p-0"
                 onClick={handleLogout}
               >
                 <i className="bi bi-power fs-4"></i>
-              </button>
-
-              {/* Settings  */}
+              </button> */}
 
               <button
                 className="btn btn-link text-muted p-0"
@@ -153,236 +151,215 @@ export default function Layout() {
         </h4>
 
         <nav className="flex-grow-1 py-5 px-3" style={{ marginTop: "35px" }}>
-          {/*  Dashboard - Owner & Manager */}
-          {(isOwner || isManager) && (
-            <NavLink
-              to="/"
-              end
-              onClick={() => setIsMobileOpen(false)}
-              className={({ isActive }) =>
-                `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
-              }
+          {/*  NO ROLE CHECKS - All visible */}
+
+          {/* Dashboard */}
+          <NavLink
+            to="/"
+            end
+            onClick={() => setIsMobileOpen(false)}
+            className={({ isActive }) =>
+              `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
+            }
+          >
+            <i
+              className={`bi bi-speedometer2 fs-5 ${isCollapsed ? "" : "me-3"}`}
+            ></i>
+            <span className={isCollapsed ? "d-none" : "fw-medium"}>
+              Dashboard
+            </span>
+          </NavLink>
+
+          {/* Products */}
+          <NavLink
+            to="/products"
+            onClick={() => setIsMobileOpen(false)}
+            className={({ isActive }) =>
+              `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
+            }
+          >
+            <i className={`bi bi-box fs-5 ${isCollapsed ? "" : "me-3"}`}></i>
+            <span className={isCollapsed ? "d-none" : "fw-medium"}>
+              Products
+            </span>
+          </NavLink>
+
+          <NavLink
+            to="/categories"
+            onClick={() => setIsMobileOpen(false)}
+            className={({ isActive }) =>
+              `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
+            }
+          >
+            <i className={`bi bi-tag fs-5 ${isCollapsed ? "" : "me-3"}`}></i>
+            <span className={isCollapsed ? "d-none" : "fw-medium"}>
+              Categories
+            </span>
+          </NavLink>
+
+          <NavLink
+            to="/locations"
+            onClick={() => setIsMobileOpen(false)}
+            className={({ isActive }) =>
+              `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
+            }
+          >
+            <i
+              className={`bi bi-building fs-5 ${isCollapsed ? "" : "me-3"}`}
+            ></i>
+            <span className={isCollapsed ? "d-none" : "fw-medium"}>
+              Locations
+            </span>
+          </NavLink>
+
+          {/* Sales */}
+          <div className="mt-2">
+            <button
+              className={`d-flex align-items-center w-100 rounded-3 mb-2 px-3 py-3 text-start text-decoration-none transition-all text-body hover-bg-primary hover-bg-opacity-10 ${isCollapsed ? "justify-content-center" : ""}`}
+              onClick={toggleSales}
+              style={{ background: "none", border: "none" }}
             >
-              <i
-                className={`bi bi-speedometer2 fs-5 ${isCollapsed ? "" : "me-3"}`}
-              ></i>
+              <i className={`bi bi-cart fs-5 ${isCollapsed ? "" : "me-3"}`}></i>
               <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                Dashboard
+                Sales
               </span>
-            </NavLink>
-          )}
-
-          {/*  Products - Owner, Manager, Stock Keeper */}
-          {(isOwner || isManager || isStockKeeper) && (
-            <>
-              <NavLink
-                to="/products"
-                onClick={() => setIsMobileOpen(false)}
-                className={({ isActive }) =>
-                  `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
-                }
-              >
+              {!isCollapsed && (
                 <i
-                  className={`bi bi-box fs-5 ${isCollapsed ? "" : "me-3"}`}
+                  className={`bi ms-auto fs-6 ${salesOpen ? "bi-chevron-down" : "bi-chevron-right"}`}
                 ></i>
-                <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                  Products
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/categories"
-                onClick={() => setIsMobileOpen(false)}
-                className={({ isActive }) =>
-                  `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
-                }
-              >
-                <i
-                  className={`bi bi-tag fs-5 ${isCollapsed ? "" : "me-3"}`}
-                ></i>
-                <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                  Categories
-                </span>
-              </NavLink>
-
-              <NavLink
-                to="/locations"
-                onClick={() => setIsMobileOpen(false)}
-                className={({ isActive }) =>
-                  `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
-                }
-              >
-                <i
-                  className={`bi bi-building fs-5 ${isCollapsed ? "" : "me-3"}`}
-                ></i>
-                <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                  Locations
-                </span>
-              </NavLink>
-            </>
-          )}
-
-          {/* Sales - Owner, Manager, Cashier */}
-          {(isOwner || isManager || isCashier) && (
-            <div className="mt-2">
-              <button
-                className={`d-flex align-items-center w-100 rounded-3 mb-2 px-3 py-3 text-start text-decoration-none transition-all text-body hover-bg-primary hover-bg-opacity-10 ${isCollapsed ? "justify-content-center" : ""}`}
-                onClick={toggleSales}
-                style={{ background: "none", border: "none" }}
-              >
-                <i
-                  className={`bi bi-cart fs-5 ${isCollapsed ? "" : "me-3"}`}
-                ></i>
-                <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                  Sales
-                </span>
-                {!isCollapsed && (
-                  <i
-                    className={`bi ms-auto fs-6 ${salesOpen ? "bi-chevron-down" : "bi-chevron-right"}`}
-                  ></i>
-                )}
-              </button>
-
-              {!isCollapsed && salesOpen && (
-                <div className="ps-5">
-                  <NavLink
-                    to="/sales/pos"
-                    onClick={() => setIsMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
-                    }
-                  >
-                    POS Terminal
-                  </NavLink>
-                  {(isOwner || isManager) && (
-                    <NavLink
-                      to="/sales/history"
-                      onClick={() => setIsMobileOpen(false)}
-                      className={({ isActive }) =>
-                        `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
-                      }
-                    >
-                      Sales History
-                    </NavLink>
-                  )}
-                </div>
               )}
-            </div>
-          )}
+            </button>
 
-          {/* Customers - Owner, Manager */}
-          {(isOwner || isManager) && (
-            <div className="mt-2">
-              <button
-                className={`d-flex align-items-center w-100 rounded-3 mb-2 px-3 py-3 text-start text-decoration-none transition-all text-body hover-bg-primary hover-bg-opacity-10 ${isCollapsed ? "justify-content-center" : ""}`}
-                onClick={toggleCustomers}
-                style={{ background: "none", border: "none" }}
-              >
+            {!isCollapsed && salesOpen && (
+              <div className="ps-5">
+                <NavLink
+                  to="/sales/pos"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
+                  }
+                >
+                  POS Terminal
+                </NavLink>
+                <NavLink
+                  to="/sales/history"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
+                  }
+                >
+                  Sales History
+                </NavLink>
+              </div>
+            )}
+          </div>
+
+          {/* Customers */}
+          <div className="mt-2">
+            <button
+              className={`d-flex align-items-center w-100 rounded-3 mb-2 px-3 py-3 text-start text-decoration-none transition-all text-body hover-bg-primary hover-bg-opacity-10 ${isCollapsed ? "justify-content-center" : ""}`}
+              onClick={toggleCustomers}
+              style={{ background: "none", border: "none" }}
+            >
+              <i
+                className={`bi bi-people fs-5 ${isCollapsed ? "" : "me-3"}`}
+              ></i>
+              <span className={isCollapsed ? "d-none" : "fw-medium"}>
+                Customers
+              </span>
+              {!isCollapsed && (
                 <i
-                  className={`bi bi-people fs-5 ${isCollapsed ? "" : "me-3"}`}
+                  className={`bi ms-auto fs-6 ${customersOpen ? "bi-chevron-down" : "bi-chevron-right"}`}
                 ></i>
-                <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                  Customers
-                </span>
-                {!isCollapsed && (
-                  <i
-                    className={`bi ms-auto fs-6 ${customersOpen ? "bi-chevron-down" : "bi-chevron-right"}`}
-                  ></i>
-                )}
-              </button>
-
-              {!isCollapsed && customersOpen && (
-                <div className="ps-5">
-                  <NavLink
-                    to="/customers/cash"
-                    onClick={() => setIsMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
-                    }
-                  >
-                    Cash Customers
-                  </NavLink>
-                  <NavLink
-                    to="/customers/permanent-credit"
-                    onClick={() => setIsMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
-                    }
-                  >
-                    Credits Customer
-                  </NavLink>
-                  <NavLink
-                    to="/customers/temporary-credit"
-                    onClick={() => setIsMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
-                    }
-                  >
-                    Temporary Credits
-                  </NavLink>
-                </div>
               )}
-            </div>
-          )}
+            </button>
 
-          {/*  Reports - Owner, Manager */}
-          {(isOwner || isManager) && (
-            <NavLink
-              to="/reports"
-              onClick={() => setIsMobileOpen(false)}
-              className={({ isActive }) =>
-                `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
-              }
-            >
-              <i
-                className={`bi bi-graph-up fs-5 ${isCollapsed ? "" : "me-3"}`}
-              ></i>
-              <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                Reports
-              </span>
-            </NavLink>
-          )}
+            {!isCollapsed && customersOpen && (
+              <div className="ps-5">
+                <NavLink
+                  to="/customers/cash"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
+                  }
+                >
+                  Cash Customers
+                </NavLink>
+                <NavLink
+                  to="/customers/permanent-credit"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
+                  }
+                >
+                  Credits Customer
+                </NavLink>
+                <NavLink
+                  to="/customers/temporary-credit"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `d-block py-2 px-3 rounded text-decoration-none small transition-all ${isActive ? "bg-primary text-white" : "text-body hover-bg-primary hover-bg-opacity-10"}`
+                  }
+                >
+                  Temporary Credits
+                </NavLink>
+              </div>
+            )}
+          </div>
 
-          {/*  Employees - Owner ONLY */}
-          {isOwner && (
-            <NavLink
-              to="/employees"
-              onClick={() => setIsMobileOpen(false)}
-              className={({ isActive }) =>
-                `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
-              }
-            >
-              <i
-                className={`bi bi-person-badge fs-5 ${isCollapsed ? "" : "me-3"}`}
-              ></i>
-              <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                Employees
-              </span>
-            </NavLink>
-          )}
+          {/* Reports */}
+          <NavLink
+            to="/reports"
+            onClick={() => setIsMobileOpen(false)}
+            className={({ isActive }) =>
+              `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
+            }
+          >
+            <i
+              className={`bi bi-graph-up fs-5 ${isCollapsed ? "" : "me-3"}`}
+            ></i>
+            <span className={isCollapsed ? "d-none" : "fw-medium"}>
+              Reports
+            </span>
+          </NavLink>
 
-          {/*  Settings - Owner ONLY */}
-          {isOwner && (
-            <NavLink
-              to="/setting"
-              onClick={() => setIsMobileOpen(false)}
-              className={({ isActive }) =>
-                `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
-              }
-            >
-              <i className={`bi bi-gear fs-5 ${isCollapsed ? "" : "me-3"}`}></i>
-              <span className={isCollapsed ? "d-none" : "fw-medium"}>
-                Settings
-              </span>
-            </NavLink>
-          )}
+          {/* Employees */}
+          <NavLink
+            to="/employees"
+            onClick={() => setIsMobileOpen(false)}
+            className={({ isActive }) =>
+              `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
+            }
+          >
+            <i
+              className={`bi bi-person-badge fs-5 ${isCollapsed ? "" : "me-3"}`}
+            ></i>
+            <span className={isCollapsed ? "d-none" : "fw-medium"}>
+              Employees
+            </span>
+          </NavLink>
+
+          {/* Settings */}
+          <NavLink
+            to="/setting"
+            onClick={() => setIsMobileOpen(false)}
+            className={({ isActive }) =>
+              `d-flex align-items-center rounded-3 mb-2 px-3 py-3 text-decoration-none transition-all ${isActive ? "bg-primary text-white shadow-sm" : "text-body hover-bg-primary hover-bg-opacity-10"} ${isCollapsed ? "justify-content-center" : ""}`
+            }
+          >
+            <i className={`bi bi-gear fs-5 ${isCollapsed ? "" : "me-3"}`}></i>
+            <span className={isCollapsed ? "d-none" : "fw-medium"}>
+              Settings
+            </span>
+          </NavLink>
         </nav>
 
         <hr
           className={`mx-3 border-secondary ${isCollapsed ? "d-none" : ""}`}
         />
 
-        <div className="px-3 pb-4">
+        {/* OPTIONAL - Logout button (can remove) */}
+        {/* <div className="px-3 pb-4">
           <button
             onClick={handleLogout}
             className={`d-flex align-items-center w-100 rounded-3 px-3 py-3 text-danger text-decoration-none transition-all hover-bg-danger hover-bg-opacity-10 ${isCollapsed ? "justify-content-center" : ""}`}
@@ -393,7 +370,7 @@ export default function Layout() {
             ></i>
             <span className={isCollapsed ? "d-none" : "fw-medium"}>Logout</span>
           </button>
-        </div>
+        </div> */}
       </div>
 
       <main
